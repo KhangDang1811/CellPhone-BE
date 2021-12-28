@@ -4,6 +4,13 @@ import axios from "axios";
 import dotenv from "dotenv";
 
 dotenv.config();
+let config = {
+  headers: {
+    "Content-Type": "application/json",
+    'Token': "238e3e39-63f9-11ec-ac64-422c37c6de1b",
+    'ShopId':"84541"
+  },
+};
 
 export const createOrder = expressAsyncHandler(async (req, res) => {
   if (req.body.orderItems.length === 0) {
@@ -55,8 +62,9 @@ export const clientCancelOrder = expressAsyncHandler(async (req, res) => {
 });
 
 export const updateOrder = expressAsyncHandler(async (req, res) => {
-  let updateOrder = await OrderModel.findById({ _id: req.params.id });
 
+  let updateOrder = await OrderModel.findById({_id:req.params.id});
+  console.log(req.params.id);
   if (updateOrder) {
     let items = [];
     updateOrder.orderItems.map((x) => {
@@ -69,6 +77,11 @@ export const updateOrder = expressAsyncHandler(async (req, res) => {
     });
     const orderGhn = {
       payment_type_id: 2,
+      return_phone:  updateOrder.shippingAddress.phone,
+      return_address: updateOrder.shippingAddress.detail,
+      return_district_id: null,
+      return_ward_code: "",
+      client_order_code: "",
 
       to_name: updateOrder.name,
       to_phone: updateOrder.shippingAddress.phone,
@@ -83,7 +96,7 @@ export const updateOrder = expressAsyncHandler(async (req, res) => {
 
       service_id: 0,
       service_type_id: 2,
-
+      pick_station_id: 1444,
       note: "",
       required_note: "KHONGCHOXEMHANG",
 
@@ -94,15 +107,16 @@ export const updateOrder = expressAsyncHandler(async (req, res) => {
     try {
       const { data } = await axios.post(
         "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/create",
-        orderGhn,
-        {
-          headers: {
-            shop_id: process.env.SHOP_ID,
-            Token: process.env.TOKEN_GHN,
-          },
-        }
+        orderGhn,config
+        // {
+        //   headers: {
+        //     ContentType: "application/json",
+        //     ShopId: process.env.SHOP_ID,
+        //     Token: process.env.TOKEN_GHN,
+        //   },
+        // }
       );
-
+      // console.log("data",data);
       const order_code = data.data.order_code;
       console.log("order_code: ", order_code);
 
@@ -110,7 +124,8 @@ export const updateOrder = expressAsyncHandler(async (req, res) => {
       await updateOrder.save();
       res.send(updateOrder);
     } catch (error) {
-      console.log(error);
+      console.log("error",  error.response.data);
+      res.status(401).send({message: error.response.data.code_message_value});
     }
   } else {
     res.send({ msg: "product not found" });
@@ -121,13 +136,13 @@ export const PrintOrderGhn = expressAsyncHandler(async (req, res) => {
   console.log('print order')
   const Order = await OrderModel.findById({ _id: req.params.id });
   if (Order) {
-    let token;
+    let token ;
     try {
       const { data } = await axios.get(
         "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/a5/gen-token",
         {
           headers: {
-            Token: process.env.TOKEN_GHN,
+            Token:process.env.TOKEN_GHN,
           },
           params: {
             order_codes: Order.order_code,
@@ -137,18 +152,19 @@ export const PrintOrderGhn = expressAsyncHandler(async (req, res) => {
 
       token = data.data.token;
       Order.token = token;
-      console.log(Order, token);
+      //console.log(Order, token);
       await Order.save();
 
       const result = await axios.get(
         `https://dev-online-gateway.ghn.vn/a5/public-api/printA5?token=${token}`,
-        {
-          headers: {
-            Token: process.env.TOKEN_GHN,
-          },
-        }
+        config
+        // {
+        //   headers: {
+        //     Token:process.env.TOKEN_GHN,
+        //   },
+        // }
       );
-      console.log("result: ", result.config.url);
+      //console.log("result: ", result.config.url);
 
       res.send(result.config.url);
     } catch (error) {
@@ -163,7 +179,9 @@ export const PrintOrderGhn = expressAsyncHandler(async (req, res) => {
 
 export const GetAllOrder = expressAsyncHandler(async (req, res) => {
   //await OrderModel.remove()
-  const Order = await OrderModel.find({}).sort({ createdAt: -1 });
+  const Order = await OrderModel.find({})
+  .populate('user', 'email')
+  .sort({ createdAt: -1 });
   if (Order) {
     res.send(Order);
   } else {
@@ -316,11 +334,29 @@ export const GetOrderPaidByUser = expressAsyncHandler(async (req, res) => {
   }
 });
 
-export const GetAllOrderInAMonth = expressAsyncHandler(async (req, res) => {
+
+export const GetAllOrderInAMonth1 = expressAsyncHandler(async (req, res) => {
   const Order = await OrderModel.find({
     createdAt: {
-      $gte: new Date(2021, 7, 11),
-      $lt: new Date(2021, 7, 16),
+      $gte: new Date(2021, 0, 1),
+      $lt: new Date(2021, 0, 31),
+    },
+  });
+
+  if (Order) {
+    res.send(Order);
+  } else {
+    res.status(400).send({ message: "no product in a month" });
+  }
+  
+  
+});
+
+export const GetAllOrderInAMonth2 = expressAsyncHandler(async (req, res) => {
+  const Order = await OrderModel.find({
+    createdAt: {
+      $gte: new Date(2021, 1, 1),
+      $lt: new Date(2021, 1, 28),
     },
   });
 
@@ -330,4 +366,143 @@ export const GetAllOrderInAMonth = expressAsyncHandler(async (req, res) => {
     res.status(400).send({ message: "no product in a month" });
   }
 });
+export const GetAllOrderInAMonth3 = expressAsyncHandler(async (req, res) => {
+  const Order = await OrderModel.find({
+    createdAt: {
+      $gte: new Date(2021, 2, 1),
+      $lt: new Date(2021, 2, 31),
+    },
+  });
 
+  if (Order) {
+    res.send(Order);
+  } else {
+    res.status(400).send({ message: "no product in a month" });
+  }
+});
+export const GetAllOrderInAMonth4 = expressAsyncHandler(async (req, res) => {
+  const Order = await OrderModel.find({
+    createdAt: {
+      $gte: new Date(2021, 3, 1),
+      $lt: new Date(2021, 3, 30),
+    },
+  });
+
+  if (Order) {
+    res.send(Order);
+  } else {
+    res.status(400).send({ message: "no product in a month" });
+  }
+});
+export const GetAllOrderInAMonth5 = expressAsyncHandler(async (req, res) => {
+  const Order = await OrderModel.find({
+    createdAt: {
+      $gte: new Date(2021, 4, 1),
+      $lt: new Date(2021, 4, 31),
+    },
+  });
+
+  if (Order) {
+    res.send(Order);
+  } else {
+    res.status(400).send({ message: "no product in a month" });
+  }
+});
+export const GetAllOrderInAMonth6 = expressAsyncHandler(async (req, res) => {
+  const Order = await OrderModel.find({
+    createdAt: {
+      $gte: new Date(2021, 5, 1),
+      $lt: new Date(2021, 5, 31),
+    },
+  });
+
+  if (Order) {
+    res.send(Order);
+  } else {
+    res.status(400).send({ message: "no product in a month" });
+  }
+});
+export const GetAllOrderInAMonth7 = expressAsyncHandler(async (req, res) => {
+  const Order = await OrderModel.find({
+    createdAt: {
+      $gte: new Date(2021, 6, 1),
+      $lt: new Date(2021, 6, 30),
+    },
+  });
+
+  if (Order) {
+    res.send(Order);
+  } else {
+    res.status(400).send({ message: "no product in a month" });
+  }
+});
+export const GetAllOrderInAMonth8 = expressAsyncHandler(async (req, res) => {
+  const Order = await OrderModel.find({
+    createdAt: {
+      $gte: new Date(2021, 7, 1),
+      $lt: new Date(2021, 7, 31),
+    },
+  });
+
+  if (Order) {
+    res.send(Order);
+  } else {
+    res.status(400).send({ message: "no product in a month" });
+  }
+});
+export const GetAllOrderInAMonth9 = expressAsyncHandler(async (req, res) => {
+  const Order = await OrderModel.find({
+    createdAt: {
+      $gte: new Date(2021, 8, 1),
+      $lt: new Date(2021, 8, 30),
+    },
+  });
+
+  if (Order) {
+    res.send(Order);
+  } else {
+    res.status(400).send({ message: "no product in a month" });
+  }
+});
+export const GetAllOrderInAMonth10 = expressAsyncHandler(async (req, res) => {
+  const Order = await OrderModel.find({
+    createdAt: {
+      $gte: new Date(2021, 9, 1),
+      $lt: new Date(2021, 9, 31),
+    },
+  });
+
+  if (Order) {
+    res.send(Order);
+  } else {
+    res.status(400).send({ message: "no product in a month" });
+  }
+});
+export const GetAllOrderInAMonth11 = expressAsyncHandler(async (req, res) => {
+  const Order = await OrderModel.find({
+    createdAt: {
+      $gte: new Date(2021, 10, 1),
+      $lt: new Date(2021, 10, 30),
+    },
+  });
+
+  if (Order) {
+    res.send(Order);
+  } else {
+    res.status(400).send({ message: "no product in a month" });
+  }
+});
+export const GetAllOrderInAMonth12 = expressAsyncHandler(async (req, res) => {
+  const Order = await OrderModel.find({
+    createdAt: {
+      $gte: new Date(2021, 11, 1),
+      $lt: new Date(2021, 11, 31),
+    },
+  });
+
+  if (Order) {
+    res.send(Order);
+  } else {
+    res.status(400).send({ message: "no product in a month" });
+  }
+});

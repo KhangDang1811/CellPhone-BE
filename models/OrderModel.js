@@ -7,7 +7,11 @@ const orderSchema = new mongoose.Schema({
     token: String,
 
     cancelOrder: Boolean,
-
+    id: {type:mongoose.Schema.Types.ObjectId},
+    user:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    },
     orderItems: [{
         name: { type: String, required: true},
         qty: { type: String, required: true},

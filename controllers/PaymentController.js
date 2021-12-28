@@ -14,9 +14,9 @@ const returnUrl = process.env.VNP_RETURN_URL;
 export const createPayment = expressAsyncHandler(async (req, res) => {
   let ipAddr =
     req.headers["x-forwarded-for"] ||
-    req.connection.remoteAddress ||
-    req.socket.remoteAddress ||
-    req.connection.socket.remoteAddress;
+    req.remoteAddress ||
+    req.socket.remoteAddress 
+    req.socket.remoteAddress;
 
   const order = new OrderModel({
     order_code: "",
@@ -166,3 +166,5 @@ function sortObject(o) {
   }
   return sorted;
 }
+
+
