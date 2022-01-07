@@ -13,6 +13,9 @@ const MessageSchema = new Schema({
     message: {
         type: String,
     },
+    content: {
+        type: String,
+    },
     createAt: {
         type: Number,
         default: Date.now

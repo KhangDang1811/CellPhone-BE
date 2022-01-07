@@ -68,6 +68,7 @@ const Product = new Schema(
     design: String,
     screen: String,
     color:String,
+    
   },
   {
     timestamps: true,

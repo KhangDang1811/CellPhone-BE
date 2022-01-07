@@ -15,10 +15,12 @@ export const ConnectSocket = (server) => {
 
   // khi client connect to server
   io.on("connection", (socket) => {
-    console.log(socket.id, "connected");
+    console.log(socket.id,"connect");
+    
 
     socket.on('join_conversation', idUser => {
-      console.log('idUser: ', idUser)
+      //console.log('idUser: ', idUser)
+      io.emit('getUsers', idUser)
       ConversationModel.findOne({idUser})
         .then(conversation => {
           if(!conversation) return;
@@ -39,6 +41,12 @@ export const ConnectSocket = (server) => {
 
       socket.join(idConversation)
     })
+
+    //typing
+    socket.on("typing", (data) => {
+      // console.log("data:", data);
+       socket.to(data.conversationId).emit("participant-action", data);
+    });
 
     // create and join room
     socket.on('create_conversation', currentUser => {
@@ -63,14 +71,16 @@ export const ConnectSocket = (server) => {
         _id,
         sender,
         message,
-        idConversation
+        idConversation,
+        content,
       } = data
 
       console.log({
         _id,
         sender,
         message,
-        idConversation
+        idConversation,
+        content
       })
 
       const conversation = await ConversationModel.updateOne(
@@ -90,7 +100,8 @@ export const ConnectSocket = (server) => {
         idConversation,
         sender,
         message, 
-        _id
+        _id,
+        content,
       }
       console.log(payload)
 
@@ -101,8 +112,8 @@ export const ConnectSocket = (server) => {
     })
 
     
-    socket.on('disconnect', () => {
-      io.emit('user-leave', "ban ay da roi khoi cuoc tro chuyen")
+    socket.on('disconnect', idUser => {
+      io.emit('user-leave', idUser)
     })
   });
 

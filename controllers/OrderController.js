@@ -338,8 +338,8 @@ export const GetOrderPaidByUser = expressAsyncHandler(async (req, res) => {
 export const GetAllOrderInAMonth1 = expressAsyncHandler(async (req, res) => {
   const Order = await OrderModel.find({
     createdAt: {
-      $gte: new Date(2021, 0, 1),
-      $lt: new Date(2021, 0, 31),
+      $gte: new Date(2022, 0, 1),
+      $lt: new Date(2022, 0, 31),
     },
   });
 
@@ -355,8 +355,8 @@ export const GetAllOrderInAMonth1 = expressAsyncHandler(async (req, res) => {
 export const GetAllOrderInAMonth2 = expressAsyncHandler(async (req, res) => {
   const Order = await OrderModel.find({
     createdAt: {
-      $gte: new Date(2021, 1, 1),
-      $lt: new Date(2021, 1, 28),
+      $gte: new Date(2022, 1, 1),
+      $lt: new Date(2022, 1, 28),
     },
   });
 
@@ -369,8 +369,8 @@ export const GetAllOrderInAMonth2 = expressAsyncHandler(async (req, res) => {
 export const GetAllOrderInAMonth3 = expressAsyncHandler(async (req, res) => {
   const Order = await OrderModel.find({
     createdAt: {
-      $gte: new Date(2021, 2, 1),
-      $lt: new Date(2021, 2, 31),
+      $gte: new Date(2022, 2, 1),
+      $lt: new Date(2022, 2, 31),
     },
   });
 
@@ -383,8 +383,8 @@ export const GetAllOrderInAMonth3 = expressAsyncHandler(async (req, res) => {
 export const GetAllOrderInAMonth4 = expressAsyncHandler(async (req, res) => {
   const Order = await OrderModel.find({
     createdAt: {
-      $gte: new Date(2021, 3, 1),
-      $lt: new Date(2021, 3, 30),
+      $gte: new Date(2022, 3, 1),
+      $lt: new Date(2022, 3, 30),
     },
   });
 
@@ -397,8 +397,8 @@ export const GetAllOrderInAMonth4 = expressAsyncHandler(async (req, res) => {
 export const GetAllOrderInAMonth5 = expressAsyncHandler(async (req, res) => {
   const Order = await OrderModel.find({
     createdAt: {
-      $gte: new Date(2021, 4, 1),
-      $lt: new Date(2021, 4, 31),
+      $gte: new Date(2022, 4, 1),
+      $lt: new Date(2022, 4, 31),
     },
   });
 
@@ -411,8 +411,8 @@ export const GetAllOrderInAMonth5 = expressAsyncHandler(async (req, res) => {
 export const GetAllOrderInAMonth6 = expressAsyncHandler(async (req, res) => {
   const Order = await OrderModel.find({
     createdAt: {
-      $gte: new Date(2021, 5, 1),
-      $lt: new Date(2021, 5, 31),
+      $gte: new Date(2022, 5, 1),
+      $lt: new Date(2022, 5, 31),
     },
   });
 
@@ -425,8 +425,8 @@ export const GetAllOrderInAMonth6 = expressAsyncHandler(async (req, res) => {
 export const GetAllOrderInAMonth7 = expressAsyncHandler(async (req, res) => {
   const Order = await OrderModel.find({
     createdAt: {
-      $gte: new Date(2021, 6, 1),
-      $lt: new Date(2021, 6, 30),
+      $gte: new Date(2022, 6, 1),
+      $lt: new Date(2022, 6, 30),
     },
   });
 
@@ -439,8 +439,8 @@ export const GetAllOrderInAMonth7 = expressAsyncHandler(async (req, res) => {
 export const GetAllOrderInAMonth8 = expressAsyncHandler(async (req, res) => {
   const Order = await OrderModel.find({
     createdAt: {
-      $gte: new Date(2021, 7, 1),
-      $lt: new Date(2021, 7, 31),
+      $gte: new Date(2022, 7, 1),
+      $lt: new Date(2022, 7, 31),
     },
   });
 
@@ -453,8 +453,8 @@ export const GetAllOrderInAMonth8 = expressAsyncHandler(async (req, res) => {
 export const GetAllOrderInAMonth9 = expressAsyncHandler(async (req, res) => {
   const Order = await OrderModel.find({
     createdAt: {
-      $gte: new Date(2021, 8, 1),
-      $lt: new Date(2021, 8, 30),
+      $gte: new Date(2022, 8, 1),
+      $lt: new Date(2022, 8, 30),
     },
   });
 
@@ -467,8 +467,8 @@ export const GetAllOrderInAMonth9 = expressAsyncHandler(async (req, res) => {
 export const GetAllOrderInAMonth10 = expressAsyncHandler(async (req, res) => {
   const Order = await OrderModel.find({
     createdAt: {
-      $gte: new Date(2021, 9, 1),
-      $lt: new Date(2021, 9, 31),
+      $gte: new Date(2022, 9, 1),
+      $lt: new Date(2022, 9, 31),
     },
   });
 
@@ -481,8 +481,8 @@ export const GetAllOrderInAMonth10 = expressAsyncHandler(async (req, res) => {
 export const GetAllOrderInAMonth11 = expressAsyncHandler(async (req, res) => {
   const Order = await OrderModel.find({
     createdAt: {
-      $gte: new Date(2021, 10, 1),
-      $lt: new Date(2021, 10, 30),
+      $gte: new Date(2022, 10, 1),
+      $lt: new Date(2022, 10, 30),
     },
   });
 
@@ -495,8 +495,8 @@ export const GetAllOrderInAMonth11 = expressAsyncHandler(async (req, res) => {
 export const GetAllOrderInAMonth12 = expressAsyncHandler(async (req, res) => {
   const Order = await OrderModel.find({
     createdAt: {
-      $gte: new Date(2021, 11, 1),
-      $lt: new Date(2021, 11, 31),
+      $gte: new Date(2022, 11, 1),
+      $lt: new Date(2022, 11, 31),
     },
   });
 

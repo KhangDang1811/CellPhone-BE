@@ -36,56 +36,101 @@ export const filterProductByType =  expressAsyncHandler(async (req, res) => {
 })
 
 export const filterProductByRandomField = expressAsyncHandler(async (req, res) => {
-    //console.log("property",req.body)
-    const products = await ProductModel.find(req.body)
+    
+    const products2 = await ProductModel.find(req.body)
+   
+    const products1 = await ProductModel.find(
+        req.body.type &&  req.body.color && req.body.ram ? {type: req.body.type,color: req.body.color,ram: req.body.ram} :
+        req.body.type &&  req.body.color ? {type: req.body.type,color: req.body.color} :
+        req.body.type &&  req.body.ram ? {type: req.body.type,ram: req.body.ram} :
+        req.body.screen &&  req.body.ram ? {screen: req.body.screen,ram: req.body.ram} :
+        req.body.type ? {type: req.body.type}  :
+        req.body.color ? {color: req.body.color} : 
+        req.body.ram ? {ram: req.body.ram} :
+        req.body.screen ? {screen: req.body.screen} :
+        {} 
+    )
+
+    const products = products1.filter(product => {
+        let flag = false
+        for(let i = 0; i < product.tskt.length; i++){
+            if(product.tskt[i].value.includes(req.body.value)){
+                flag = true
+                break
+            }
+            if(product.tskt[i].value.includes(req.body.sensor)){
+                flag = true
+                break
+            }
+            if(product.tskt[i].value.includes(req.body.camera)){
+                flag = true
+                break
+            }
+            if(product.tskt[i].value.includes(req.body.system)){
+                flag = true
+                break
+            }
+            if(product.tskt[i].value.includes(req.body.hz)){
+                flag = true
+                break
+            }
+            if(product.tskt[i].value.includes(req.body.memory)){
+                flag = true
+                break
+            }
+        }
+        return flag
+    })
+
     if(products){
-        res.send(products)
-    }else{
+        res.send(products.length > 0 ? products : products2)
+    }
+    else{
         res.send({message: 'product not found'})
     }
 })
 export const AddProduct = expressAsyncHandler(async (req, res) => {
-//   const result = await cloudinary.uploader.upload(req.file.path, {
-//     folder: "dev_setups",
-//   });
+  const result = await cloudinary.uploader.upload(req.body.image, {
+    folder: "dev_setups",
+  });
+  //console.log(result);
+  const product = new ProductModel({
+    name: req.body.name,
+    price: req.body.price,
+    salePrice: req.body.salePrice,
+    amount: req.body.amount,
+    type: req.body.type,
+    image: result.secure_url,
+    image:req.body.image,
+    cloudinary_id: result.public_id,
+    rating: 0,
 
-//   const product = new ProductModel({
-//     name: req.body.name,
-//     price: req.body.price,
-//     salePrice: req.body.salePrice,
-//     amount: req.body.amount,
-//     type: req.body.type,
-//     // image: result.secure_url,
-//     image:req.body.image,
-//     cloudinary_id: result.public_id,
-//     rating: 0,
+    os: req.body.os,
+    ram: req.body.ram,
+    battery: req.body.battery,
+    rom: req.body.rom,
+    camera: req.body.camera,
+    special: req.body.special,
+    design: req.body.design,
+    screen: req.body.screen,
+  });
+    // const product = new ProductModel(req.body);
+    // try{
+    //     const newProduct = await product.save();
+    //     res.status(200).json(newProduct);
+    // }
+    // catch(err){
+    //     console.log(err);
+    // }
+  const newProduct = await product.save();
 
-//     os: req.body.os,
-//     ram: req.body.ram,
-//     battery: req.body.battery,
-//     rom: req.body.rom,
-//     camera: req.body.camera,
-//     special: req.body.special,
-//     design: req.body.design,
-//     screen: req.body.screen,
-//   });
-    const product = new ProductModel(req.body);
-    try{
-        const newProduct = await product.save();
-        res.status(200).json(newProduct);
-    }
-    catch(err){
-        console.log(err);
-    }
-//   const newProduct = await product.save();
-
-//   if (newProduct) {
-//     return res
-//       .status(201)
-//       .send({ message: "New Product Created", data: newProduct });
-//   } else {
-//     res.send("error add product");
-//   }
+  if (newProduct) {
+    return res
+      .status(201)
+      .send({ message: "New Product Created", data: newProduct });
+  } else {
+    res.send("error add product");
+  }
  
 });
 
@@ -97,7 +142,7 @@ export const UpdateProduct = expressAsyncHandler(async (req, res) => {
     } else {
         res.send({ message: "product not found" });
     }
-  //await cloudinary.uploader.destroy(product.cloudinary_id);
+//   await cloudinary.uploader.destroy(product.cloudinary_id);
 
 //   let result;
 //   if (req.file) {
@@ -112,9 +157,9 @@ export const UpdateProduct = expressAsyncHandler(async (req, res) => {
 //     product.salePrice = req.body.salePrice;
 //     product.type = req.body.type;
 //     product.image = req.body.image;
-//     //product.image = result?.secure_url || product.image;
+//     product.image = result?.secure_url || product.image;
 //     product.rating = 0;
-//     //product.cloulinary_id = result?.public_id || product.cloudinary_id;
+//     product.cloulinary_id = result?.public_id || product.cloudinary_id;
 
 //     product.os = req.body.os;
 //     product.ram = req.body.ram;
@@ -139,7 +184,7 @@ export const UpdateProduct = expressAsyncHandler(async (req, res) => {
 export const DeleteProduct = expressAsyncHandler(async (req, res) => {
     const deleteProduct = await ProductModel.findById(req.params.id)
 
-    //await cloudinary.uploader.destroy(deleteProduct.cloudinary_id);
+    await cloudinary.uploader.destroy(deleteProduct.cloudinary_id);
 
     if(deleteProduct){
         await deleteProduct.remove()
@@ -149,7 +194,7 @@ export const DeleteProduct = expressAsyncHandler(async (req, res) => {
         res.send('error in deletetion')
     }
 })
-
+//, $options: '$i'
 export const SearchProduct = expressAsyncHandler(async (req, res) => {
     const name = req.query.name
     const product = await ProductModel.find({name: {$regex: name, $options: '$i'}})

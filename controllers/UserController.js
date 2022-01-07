@@ -1,7 +1,8 @@
 import {UserModel} from '../models/UserModel.js'
-import {generateToken} from '../untils/until.js'
+import {generateToken,generateTokenResetPassword} from '../untils/until.js'
 import expressAsyncHandler from 'express-async-handler'
 import bcrypt from 'bcryptjs';
+import nodemailer from 'nodemailer'
 
 export const getAllUser = (req, res) => {
     UserModel.find({})
@@ -146,5 +147,57 @@ export const DeleteUser = expressAsyncHandler(async (req, res) => {
         res.send({message: 'user deleted'})
     }else{
         res.send({message: 'user not exists'})
+    }
+})
+
+//email link to reset password 
+export const forgotPassword = expressAsyncHandler(async (req, res) => {
+    const user = await UserModel.findOne({email: req.body.email})
+    const transport = nodemailer.createTransport({
+        host: process.env.MAIL_HOST,
+        port: process.env.MAIL_PORT,
+        auth: {
+          user: "691ff66923d7cd",
+          pass: "1cea8294d47aac"
+        }
+      });
+    if(user){
+        const token = generateTokenResetPassword(user);
+        await user.save();
+        const resetUrl = `http://localhost:3000/resetpassword/${token}`;
+        const mailOptions = {
+            from: process.env.MAIL_FROM, 
+            to: `${user.email}`,
+            subject: 'Reset Password',
+            text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
+            Please click on the following link, or paste this into your browser to complete the process:\n\n
+            ${resetUrl}\n\n
+            If you did not request this, please ignore this email and your password will remain unchanged.\n`
+        }
+       await transport.sendMail(mailOptions, (err, info) => {
+            if(err){
+                console.log(err)
+            }else{
+                console.log(info)
+            }
+        }
+        )
+        res.send({message: 'email sent'})
+    }else{
+        res.status(401).send({message: " email already exist"});
+       //res.send({message: 'email not exists'})
+    }
+})
+
+//update password after reset password link
+export const resetPassword = expressAsyncHandler(async (req, res) => {
+   // console.log(req.body);
+    const user = await UserModel.findOne({email: req.body.email})
+    if(user){
+        user.password = bcrypt.hashSync(req.body.password, 10),
+        await user.save()
+        res.send({message: 'password updated'})
+    }else{
+        res.send({message: 'email not exists'})
     }
 })
