@@ -32,11 +32,15 @@ export const registerUser = expressAsyncHandler(async (req, res) => {
     //     token: generateToken(user),
     // });
 
+    //Password conditions include 1 uppercase letter, 1 special character, and 1 lowercase letter
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/;
+
     const existUser = await UserModel.findOne({email: req.body.email});
     if (existUser) {
         res.status(401).send({message: " email already exist"});
-    }
-    else {
+    }else if(!passwordRegex.test(req.body.password)){
+        res.status(401).send({message: "Password must contain at least 1 uppercase letter, 1 special character, 1 lowercase letter and 1 number"});
+    }else {
         const user = new UserModel({
             _id: req.body._id,
             name: req.body.name,
@@ -169,10 +173,10 @@ export const forgotPassword = expressAsyncHandler(async (req, res) => {
             from: process.env.MAIL_FROM, 
             to: `${user.email}`,
             subject: 'Reset Password',
-            text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
-            Please click on the following link, or paste this into your browser to complete the process:\n\n
-            ${resetUrl}\n\n
-            If you did not request this, please ignore this email and your password will remain unchanged.\n`
+            html: `
+            <h2>RESET YOUR PASSWORD</h2>
+            Please click on the following link, or paste this into your browser to complete the process:
+            Click<a href="${resetUrl}"> here</a> to reset your password.`
         }
        await transport.sendMail(mailOptions, (err, info) => {
             if(err){
