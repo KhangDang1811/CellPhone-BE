@@ -20,4 +20,5 @@ ListTypeProductRouter.delete(
   deleteTypeProduct
 );
 ListTypeProductRouter.post("/newtype",NewTypeProduct)
+
 export default ListTypeProductRouter;

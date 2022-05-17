@@ -18,6 +18,8 @@ import cloudinary from './config/cloudinary/cloudinary.js'
 import PaymentRouter from './routers/PaymentRouter.js'
 import SelectListrouter from './routers/SelectListRouter.js'
 import ListTypeProductRouter from './routers/ListTypeProductRouter.js'
+import LisyTypeProductLapRouter from './routers/ListTypeProductLapRouter.js'
+import SelectListLaprouter from './routers/SelectListLapRouter.js'
 
 dotenv.config();
 process.env.TOKEN_SECRET;
@@ -39,8 +41,9 @@ app.use('/order', OrderRouter)
 app.use('/chat', ChatRouter)
 app.use('/payment', PaymentRouter)
 app.use('/selectList', SelectListrouter)
+app.use('/selectListLap', SelectListLaprouter)
 app.use('/typeList', ListTypeProductRouter)
-
+app.use('/typeListLap', LisyTypeProductLapRouter)
 app.get('/api/config/paypal', (req, res) => {
     res.send(process.env.PAYPAL_CLIENT_ID || 'sb')
 })
