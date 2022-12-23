@@ -17,6 +17,8 @@ import {
   PrintOrderGhn,
   clientCancelOrder,
   GetOrderByUser,
+  GetAllOrderCancel,
+  GetOrderCancelByUser,
 } from "../controllers/OrderController.js";
 import {
   GetAllOrderInAMonth1,
@@ -42,12 +44,14 @@ OrderRouter.post("/cancel/:id", clientCancelOrder);
 OrderRouter.get("/print/:id", PrintOrderGhn);
 OrderRouter.put("/shipping/:id", ShippingProduct);
 OrderRouter.put("/paid/:id", PaidProduct);
-OrderRouter.delete('/delete/:id', DeleteOrder)
+// OrderRouter.delete('/delete/:id', DeleteOrder)
+OrderRouter.put('/delete/:id', DeleteOrder)
 
 OrderRouter.get("/", GetAllOrder);
 OrderRouter.get("/orderPaypal", GetAllOrderPaypal);
 OrderRouter.get("/orderPendding", GetAllOrderPendding);
 OrderRouter.get("/orderShipping", GetAllOrderShipping);
+OrderRouter.get("/orderCancel",GetAllOrderCancel);
 OrderRouter.get("/orderPaid", GetAllOrderPaid);
 
 // --- Order In Month
@@ -71,6 +75,7 @@ OrderRouter.get("/orderPaypal/:id", GetOrderPaypalByUser);
 OrderRouter.get("/orderPendding/:id", GetOrderPenddingByUser);
 OrderRouter.get("/orderShipping/:id", GetOrderShippingByUser);
 OrderRouter.get("/orderpaid/:id", GetOrderPaidByUser);
+OrderRouter.get("/orderCancel/:id", GetOrderCancelByUser);
 
 
 

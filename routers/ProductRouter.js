@@ -27,7 +27,7 @@ ProductRouter.get("/:type", filterProductByType);
 ProductRouter.post("/filter/random", filterProductByRandomField);
 ProductRouter.get("/detail/:id", findProductById);
 ProductRouter.get("/", getAllProduct);
-ProductRouter.get("/pagination/:page", paginationProduct);
+ProductRouter.get(`/pagination/:page`, paginationProduct);
 
 ProductRouter.post("/rate/:id", RateProduct);
 ProductRouter.post("/comment/:id", CommentProduct);

@@ -21,7 +21,7 @@ export const createOrder = expressAsyncHandler(async (req, res) => {
       to_ward_code: req.body.to_ward_code,
       to_district_id: req.body.to_district_id,
       cancelOrder: false,
-
+      statusCancel: false,
       orderItems: req.body.orderItems,
       shippingAddress: {
         province: req.body.shippingAddress.province,
@@ -200,9 +200,10 @@ export const GetAllOrderPaypal = expressAsyncHandler(async (req, res) => {
   }
 });
 
+ 
 export const GetAllOrderPendding = expressAsyncHandler(async (req, res) => {
-  const Order = await OrderModel.find({
-    $or: [{ status: "pendding" }, { paymentMethod: "payOnline" }],
+  const Order = await OrderModel.find({ 
+    $or: [{ status: "pendding" }, { paymentMethod: "payOnline" }] ,
   }).sort({
     createdAt: -1,
   });
@@ -235,11 +236,26 @@ export const GetAllOrderPaid = expressAsyncHandler(async (req, res) => {
   }
 });
 
-export const DeleteOrder = expressAsyncHandler(async (req, res) => {
-  const deleteOrder = await OrderModel.findById({_id: req.params.id});
+//GetAllOrderCancel
+export const GetAllOrderCancel = expressAsyncHandler(async (req, res) => {
+  const Order = await OrderModel.find({ statusCancel: "true" }).sort({
+    createdAt: -1,
+  });
+  if (Order) {
+    res.send(Order);
+  } else {
+    res.status(401).send({ message: "no order" });
+  }
+});
 
+export const DeleteOrder = expressAsyncHandler(async (req, res) => {
+  
+  const deleteOrder = await OrderModel.findById({_id: req.params.id});
+  const statusCancel = "true";
   if (deleteOrder) {
-    await deleteOrder.remove();
+    // await deleteOrder.remove();
+    deleteOrder.statusCancel = statusCancel;
+    await deleteOrder.save();
     res.send({ message: "product deleted" });
   } else {
     res.send("error in delete order");
@@ -301,6 +317,7 @@ export const GetOrderPaypalByUser = expressAsyncHandler(async (req, res) => {
 export const GetOrderPenddingByUser = expressAsyncHandler(async (req, res) => {
   const Order = await OrderModel.find({
     user: req.params.id,
+    statusCancel: "false",
     status: "pendding",
   }).sort({ createdAt: -1 });
   if (Order) {
@@ -334,6 +351,19 @@ export const GetOrderPaidByUser = expressAsyncHandler(async (req, res) => {
   }
 });
 
+export const GetOrderCancelByUser = expressAsyncHandler(async (req, res) => {
+  const Order = await OrderModel.find({
+    user: req.params.id,
+    statusCancel: "true",
+  }).sort({ createdAt: -1 });
+  if (Order) {
+    //update timestamp cancel order equal time now
+
+    res.send(Order);
+  } else {
+    res.status(401).send({ message: "no order cancel by user" });
+  }
+});
 
 export const GetAllOrderInAMonth1 = expressAsyncHandler(async (req, res) => {
   const Order = await OrderModel.find({

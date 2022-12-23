@@ -7,6 +7,7 @@ const orderSchema = new mongoose.Schema({
     token: String,
 
     cancelOrder: Boolean,
+    statusCancel:Boolean,
     id: {type:mongoose.Schema.Types.ObjectId},
     user:{
         type: mongoose.Schema.Types.ObjectId,
