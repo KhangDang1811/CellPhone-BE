@@ -1,0 +1,28 @@
+
+ span.dot {
+    position: relative;
+  }
+ span.dot.dot {
+    animation: loading 0.6s linear infinite;
+  }
+ span.dot.dot-1 {
+    animation-delay: 0.1s;
+  }
+ span.dot.dot-2 {
+    animation-delay: 0.2s;
+  }
+ span.dot.dot-3 {
+    animation-delay: 0.3s;
+  }
+  
+  @keyframes loading {
+    0% {
+      top: 0;
+    }
+    50% {
+      top: -2px;
+    }
+    100% {
+      top: 0;
+    }
+  }
