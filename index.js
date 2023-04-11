@@ -21,6 +21,11 @@ import ListTypeProductRouter from './routers/ListTypeProductRouter.js'
 import LisyTypeProductLapRouter from './routers/ListTypeProductLapRouter.js'
 import SelectListLaprouter from './routers/SelectListLapRouter.js'
 
+import xss from 'xss-clean'
+import helmet from 'helmet'
+import { rateLimit } from 'express-rate-limit'
+
+
 dotenv.config();
 process.env.TOKEN_SECRET;
 
@@ -31,12 +36,21 @@ const server = createServer(app)
 ConnectSocket(server)
 connectDB()
 
+app.use(helmet());
+app.use(xss());
 app.use(cors())
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
+const limiter = rateLimit({
+	windowMs: 15 * 60 * 1000, // 15 minutes
+	max: 2, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+})
+
 app.use('/products', ProductRouter)
-app.use('/user', UserRouter)
+app.use('/user', UserRouter,limiter)
 app.use('/order', OrderRouter)
 app.use('/chat', ChatRouter)
 app.use('/payment', PaymentRouter)
@@ -47,6 +61,8 @@ app.use('/typeListLap', LisyTypeProductLapRouter)
 app.get('/api/config/paypal', (req, res) => {
     res.send(process.env.PAYPAL_CLIENT_ID || 'sb')
 })
+
+
 
 app.post('/api/upload', async (req, res) => {
     try {
