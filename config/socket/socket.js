@@ -19,7 +19,7 @@ export const ConnectSocket = (server) => {
     
 
     socket.on('join_conversation', idUser => {
-      //console.log('idUser: ', idUser)
+     
       io.emit('getUsers', idUser)
       ConversationModel.findOne({idUser})
         .then(conversation => {
