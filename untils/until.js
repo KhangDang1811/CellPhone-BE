@@ -29,7 +29,7 @@ export const generateTokenResetPassword = (user) => {
       address: user.address,
       isAdmin: user.isAdmin,
     },
-    process.env.TOKEN_SECRET || "caokhahieu",
+    process.env.TOKEN_SECRET || "dangkhang",
     {
       expiresIn: "1h",
     }
@@ -42,7 +42,7 @@ export const isAuth = (req, res, next) => {
     const token = authorization.slice(7, authorization.length); // Bearer
     jwt.verify(
       token,
-      process.env.TOKEN_SECRET || "caokhahieu",
+      process.env.TOKEN_SECRET || "dangkhang",
       (err, decode) => {
         if (err) {
           res.status.send({ message: "invalid token" });
